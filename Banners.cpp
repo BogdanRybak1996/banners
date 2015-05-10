@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+
 void copy_banners(ifstream &, ifstream &, ofstream &);
 // void put_banners(fstream &,fstream &,fstream &);
 std::string startsave(ifstream &);
@@ -142,8 +143,24 @@ void copy_banners(ifstream& input, ifstream& filters, ofstream &output)
 		if (c == '<') // 60 - код символа "<" в ASCII
 			  elements.push_back(startsave(input));
 	}
-	// тут зробить аналіз строчок
+	for(int i=0;i<elements.size();i++){
+		for(int j=0;j<elements[i].size();j++){
+		  std::string link;
+		  std::vector<std::string> links;		// Всі посилання із фрагмунту
+		  int patty=0; 					//Змінна, яка рахує кількість лапок
+		if(elements[i][j]=='"'){
+			patty++;
+		}
+		if(patty%2!=0){
+			link.push_back(elements[i][j]);
+		}
+		else{
+			links.push_back(link);
+			link.clear();
+        }
+	}
 }
+	}
 
 std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 	std::string fragment;
@@ -152,6 +169,8 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 	fragment.push_back('<');
 	while (temp1 != temp2) {
 		input.get(c);
+		if(c=='\n')
+			continue;
 		fragment.push_back(c);
 		if (c == '<')
 			temp1++;
