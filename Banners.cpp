@@ -136,7 +136,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 }
 
 // ---------------------------------------------------------------------------
-void copy_banners(ifstream& input, ifstream& filters, ofstream &output)
+void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 { // Функція, яка копіює банери (без вирізання)
 	std::vector<std::string>elements;
 	char c = '\0';
