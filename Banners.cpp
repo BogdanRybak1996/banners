@@ -11,10 +11,12 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <Masks.hpp>
 
 void copy_banners(ifstream &, ifstream &, ofstream &);
 // void put_banners(fstream &,fstream &,fstream &);
 std::string startsave(ifstream &);
+bool match(std::vector<std::string>, ifstream &);
 TForm1 *Form1;
 
 // ---------------------------------------------------------------------------
@@ -140,27 +142,33 @@ void copy_banners(ifstream& input, ifstream& filters, ofstream &output)
 	char c = '\0';
 	while (!input.eof()) { // Зчитуємо посимвольно, шукаючи "<"
 		input.get(c);
-		if (c == '<') // 60 - код символа "<" в ASCII
+		if (c == '<')
 			  elements.push_back(startsave(input));
 	}
-	for(int i=0;i<elements.size();i++){
-		for(int j=0;j<elements[i].size();j++){
-		  std::string link;
-		  std::vector<std::string> links;		// Всі посилання із фрагмунту
-		  int patty=0; 					//Змінна, яка рахує кількість лапок
-		if(elements[i][j]=='"'){
-			patty++;
+	for (int i = 0; i < elements.size(); i++) {
+		int patty = 0; // Змінна, в якій запам'ятовується кількість лапок
+		std::string link;
+		std::vector<std::string>links; // Всі посилання із фрагменту
+		for (int j = 0; j < elements[i].size(); j++) {
+			if (elements[i][j] == '"') {
+				patty++;
+				continue;
+			}
+			if (patty % 2 != 0) {
+				link.push_back(elements[i][j]);
+			}
+			else {
+				if (link.empty()) // Пусті рядки не запам'ятовуємо
+					  continue;
+				links.push_back(link);
+				link.clear();
+			}
 		}
-		if(patty%2!=0){
-			link.push_back(elements[i][j]);
+		if (match(links, filters)) {
+			output << elements[i];
 		}
-		else{
-			links.push_back(link);
-			link.clear();
-        }
 	}
 }
-	}
 
 std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 	std::string fragment;
@@ -169,7 +177,7 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 	fragment.push_back('<');
 	while (temp1 != temp2) {
 		input.get(c);
-		if(c=='\n')
+		if (c == '\n')
 			continue;
 		fragment.push_back(c);
 		if (c == '<')
@@ -178,4 +186,20 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 			temp2++;
 	}
 	return fragment;
+}
+
+bool match(std::vector<std::string>links, ifstream &filters)
+  // Функція, яка перевіряє чи співпадає хоча б одне посилання з маскою
+{
+	for (int i = 0; i < links.size(); i++) {
+		while (!filters.eof()) {
+			std::string filter;
+			filters >> filter;
+			TMask *Mask = new TMask(filter.c_str());
+			if(Mask->Matches(links[i].c_str()))
+			return true;
+			delete Mask;
+		}
+	}
+	return false;
 }
