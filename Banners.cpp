@@ -15,7 +15,7 @@
 #include <Masks.hpp>
 
 void copy_banners(ifstream &, ifstream &, ofstream &);
-// void put_banners(ifstream &,ifstream &,ofstream &);
+void put_banners(ifstream &,ifstream &,ofstream &,ofstream &);
 std::string startsave(ifstream &);
 bool match_my(std::vector<std::string>, ifstream &);
 TForm1 *Form1;
@@ -76,14 +76,11 @@ void __fastcall TForm1::FormShow(TObject *Sender) // Шляши до файлів по default
 // ---------------------------------------------------------------------------
 
 void __fastcall TForm1::Button1Click(TObject *Sender) {
-	/* FILE *input;
-	 FILE *output;
-	 FILE *filters;
-	 */
 	std::ifstream input;
 	std::ofstream inputOut;
 	std::ifstream filters;
 	std::ofstream output;
+	StatusListBox->Clear();
 	bool health = 1;
 	AnsiString inputfilename = OpenDialog1->FileName;
 
@@ -128,8 +125,12 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 	}
 
 	if (health) {
-		if (!(Form3->CheckBox1->Checked))
+		if (!(Form3->CheckBox1->Checked)){
 			copy_banners(input, filters, output);
+		}
+		else{
+			put_banners(input,filters,output,inputOut);
+		}
 	}
 	input.close();
 	inputOut.close();
@@ -169,6 +170,7 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 		}
 		if (match_my(links, filters)) {
 			output << elements[i];
+			Form1->StatusListBox->Items->Add("Баннер перенесено в вихідний файл");
 			output << std::endl;
 		}
 	}
@@ -259,3 +261,11 @@ void __fastcall TForm1::Button4Click(TObject *Sender) {
 	Form3->Show();
 }
 // ---------------------------------------------------------------------------
+void put_banners(ifstream &input,ifstream &filters,ofstream &output,ofstream &inputOut){
+	copy_banners(input,filters,output);			// Копіюємо банери в новий файлик
+	std::string inputfile;
+	while(!input.eof()){    					// Вигружаємо вмість всього файлу в string
+		inputfile.push_back(input.get());
+	}
+
+}
