@@ -205,10 +205,13 @@ std::string startsave(ifstream &input) { // ‘ункц≥€, €ка запам'€товуЇ "<*>"
 			if(input.eof())
 				break;				// якщо проб≥л так ≥ не знайшли - виходимо
 		}
+
 		bool startend = 0;
 		bool prevend = 0;
 		while(start!=(end+' ')){
 			input.get(c);
+			if(c=='\n')
+				continue;
 			fragment.push_back(c);
 			if (c=='<') {
 				prevend=1;
