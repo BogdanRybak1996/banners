@@ -236,17 +236,20 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 bool match_my(std::vector<std::string>links, ifstream &filters)
   // Функція, яка перевіряє чи співпадає хоча б одне посилання з маскою
 {
+	bool t=0;
 	for (int i = 0; i < links.size(); i++) {
 		while (!filters.eof()) {
 			std::string filter;
 			filters >> filter;
 			TMask *Mask = new TMask(filter.c_str());
 			if (Mask->Matches(links[i].c_str()))
-				return true;
+				t=1;
 			delete Mask;
 		}
 	}
-	return false;
+	filters.clear();
+	filters.seekg(0);  							// Повертаємося на початок файлу для його використання в подальшому
+	return t;
 }
 
 void __fastcall TForm1::Button4Click(TObject *Sender) {
