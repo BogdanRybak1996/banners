@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -15,9 +15,18 @@
 #include <Masks.hpp>
 
 void copy_banners(ifstream &, ifstream &, ofstream &);
-void put_banners(ifstream &,ifstream &,ofstream &,ofstream &);
+void put_banners(ifstream &, ifstream &, ofstream &, ofstream &);
 std::string startsave(ifstream &);
 bool match_my(std::vector<std::string>, ifstream &);
+
+struct links { // Використовується в функції "put_banners"
+
+	int pos;
+	int long_link;
+
+	std::string link;
+};
+
 TForm1 *Form1;
 
 // ---------------------------------------------------------------------------
@@ -125,11 +134,11 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 	}
 
 	if (health) {
-		if (!(Form3->CheckBox1->Checked)){
+		if (!(Form3->CheckBox1->Checked)) {
 			copy_banners(input, filters, output);
 		}
-		else{
-			put_banners(input,filters,output,inputOut);
+		else {
+			put_banners(input, filters, output, inputOut);
 		}
 	}
 	input.close();
@@ -170,7 +179,8 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 		}
 		if (match_my(links, filters)) {
 			output << elements[i];
-			Form1->StatusListBox->Items->Add("Баннер перенесено в вихідний файл");
+			Form1->StatusListBox->Items->Add
+			  ("Баннер перенесено в вихідний файл");
 			output << std::endl;
 		}
 	}
@@ -195,41 +205,42 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 				break;
 		}
 	}
-	else{
+	else {
 		std::string start;
 		std::string end;
 		char c;
 		fragment.push_back('<');
-		while(c!=' ' || c=='\n' || c=='\t'){					// Записуємо початок тега
+		while (c != ' ' || c == '\n' || c == '\t') { // Записуємо початок тега
 			input.get(c);
 			fragment.push_back(c);
 			start.push_back(c);
-			if(input.eof())
-				break;				// Якщо пробіл так і не знайшли - виходимо
+			if (input.eof())
+				break; // Якщо пробіл так і не знайшли - виходимо
 		}
 
 		bool startend = 0;
 		bool prevend = 0;
-		while(start!=(end+' ')){
+		while (start != (end + ' ')) {
 			input.get(c);
-			if(c=='\n')
+			if (c == '\n')
 				continue;
 			fragment.push_back(c);
-			if (c=='<') {
-				prevend=1;
+			if (c == '<') {
+				prevend = 1;
 			}
-			if((c=='/') && prevend){
-				startend=1;
+			if ((c == '/') && prevend) {
+				startend = 1;
 				continue;
 			}
-			if(c=='>'){								   // Якщо закриваючий тег не співпадає з відкриваючим - шукаємо новий
-				startend=0;
+			if (c == '>')
+			{ // Якщо закриваючий тег не співпадає з відкриваючим - шукаємо новий
+				startend = 0;
 				end.clear();
 			}
-			if(startend){  								// Записуємо закриваючий тег
+			if (startend) { // Записуємо закриваючий тег
 				end.push_back(c);
 			}
-			if(input.eof()){
+			if (input.eof()) {
 				break;
 			}
 		}
@@ -241,31 +252,56 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 bool match_my(std::vector<std::string>links, ifstream &filters)
   // Функція, яка перевіряє чи співпадає хоча б одне посилання з маскою
 {
-	bool t=0;
+	bool t = 0;
 	for (int i = 0; i < links.size(); i++) {
 		while (!filters.eof()) {
 			std::string filter;
 			filters >> filter;
 			TMask *Mask = new TMask(filter.c_str());
 			if (Mask->Matches(links[i].c_str()))
-				t=1;
+				t = 1;
 			delete Mask;
 		}
 	}
 	filters.clear();
-	filters.seekg(0);  							// Повертаємося на початок файлу для його використання в подальшому
+	filters.seekg(0);
+	// Повертаємося на початок файлу для його використання в подальшому
 	return t;
 }
 
 void __fastcall TForm1::Button4Click(TObject *Sender) {
 	Form3->Show();
 }
+
 // ---------------------------------------------------------------------------
-void put_banners(ifstream &input,ifstream &filters,ofstream &output,ofstream &inputOut){
-	copy_banners(input,filters,output);			// Копіюємо банери в новий файлик
-	std::string inputfile;
-	while(!input.eof()){    					// Вигружаємо вмість всього файлу в string
-		inputfile.push_back(input.get());
+void put_banners(ifstream &input, ifstream &filters, ofstream &output,
+  ofstream &inputOut) {
+	std::vector<links>links_in_str; 		   // Тут будемо зберігати наші посилання
+	links temp;
+	copy_banners(input, filters, output); 	// Копіюємо банери в новий файлик
+	std::string inputstr;
+	while (!input.eof()) { 				// Вигружаємо вмість всього файлу в string
+		inputstr.push_back(input.get());
+	}
+	bool save = 0;
+	int patty = 0;
+	temp.long_link = 0;
+	for (int i = 0; i < inputstr.length(); i++) { 		// Записуємо всі посилання
+		if (inputsrt[i] == '"' && patty % 2 == 0) {
+			patty++;
+			temp.pos = i;
+			continue;
+		}
+		if (patty % 2 != 0 && inputsrt[i] != '"') {
+			temp.link.push_back(inputstr[i]);
+			temp.long_link++;
+		}
+		if (patty % 2 != 0 && inputsrt[i] == '"') {
+			links_in_str.push_back(temp);
+			temp.link.clear();
+			temp.long_link = 0;
+		}
 	}
 
 }
+
