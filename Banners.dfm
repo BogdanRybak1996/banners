@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = #1042#1080#1088#1110#1079#1072#1095' '#1073#1072#1085#1077#1088#1110#1074
-  ClientHeight = 532
+  ClientHeight = 540
   ClientWidth = 606
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -55,8 +55,8 @@ object Form1: TForm1
     ParentFont = False
   end
   object Button1: TButton
-    Left = 469
-    Top = 432
+    Left = 461
+    Top = 408
     Width = 121
     Height = 41
     Caption = #1055#1086#1095#1072#1090#1080
@@ -113,8 +113,8 @@ object Form1: TForm1
     OnClick = CreateButtonClick
   end
   object Button2: TButton
-    Left = 491
-    Top = 491
+    Left = 523
+    Top = 507
     Width = 75
     Height = 25
     Caption = #1042#1080#1081#1090#1080
@@ -140,19 +140,20 @@ object Form1: TForm1
   end
   object StatusListBox: TListBox
     Left = 8
-    Top = 368
+    Top = 344
     Width = 426
     Height = 156
     ItemHeight = 13
     TabOrder = 9
   end
-  object CheckBox1: TCheckBox
-    Left = 218
-    Top = 73
-    Width = 179
-    Height = 17
-    Caption = #1042#1080#1088#1110#1079#1072#1090#1080' '#1079' '#1087#1086#1095#1072#1090#1082#1086#1074#1086#1111' '#1089#1090#1086#1088#1110#1085#1082#1080
+  object Button4: TButton
+    Left = 16
+    Top = 506
+    Width = 99
+    Height = 30
+    Caption = #1053#1072#1083#1072#1096#1090#1091#1074#1072#1085#1085#1103
     TabOrder = 10
+    OnClick = Button4Click
   end
   object OpenDialog1: TOpenDialog
     Filter = 'HTML|*.html|HTM|*.htm'

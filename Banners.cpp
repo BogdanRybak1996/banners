@@ -8,13 +8,14 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 #include "Unit2.h"
+#include "Unit3.h"
 #include <vector>
 #include <string>
 #include <fstream>
 #include <Masks.hpp>
 
 void copy_banners(ifstream &, ifstream &, ofstream &);
-// void put_banners(fstream &,fstream &,fstream &);
+// void put_banners(ifstream &,ifstream &,ofstream &);
 std::string startsave(ifstream &);
 bool match_my(std::vector<std::string>, ifstream &);
 TForm1 *Form1;
@@ -47,6 +48,7 @@ void __fastcall TForm1::CreateButtonClick(TObject *Sender) {
 void __fastcall TForm1::Button2Click(TObject *Sender) {
 	Form1->Close();
 	Form2->Close();
+	Form3->Close();
 }
 // ---------------------------------------------------------------------------
 
@@ -126,7 +128,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 	}
 
 	if (health) {
-		if (!(CheckBox1->Checked))
+		if (!(Form3->CheckBox1->Checked))
 			copy_banners(input, filters, output);
 	}
 	input.close();
@@ -144,7 +146,7 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 	while (!input.eof()) { // «читуЇмо посимвольно, шукаючи "<"
 		input.get(c);
 		if (c == '<')
-			  elements.push_back(startsave(input));
+			elements.push_back(startsave(input));
 	}
 	for (int i = 0; i < elements.size(); i++) {
 		int patty = 0; // «м≥нна, в €к≥й запам'€товуЇтьс€ к≥льк≥сть лапок
@@ -167,27 +169,66 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 		}
 		if (match_my(links, filters)) {
 			output << elements[i];
-			output << endl;
+			output << std::endl;
 		}
 	}
 }
 
 std::string startsave(ifstream &input) { // ‘ункц≥€, €ка запам'€товуЇ "<*>"
 	std::string fragment;
-	int temp1 = 1, temp2 = 0;
-	char c;
-	fragment.push_back('<');
-	while (temp1 != temp2) {
-		input.get(c);
-		if (c == '\n')
-			continue;
-		fragment.push_back(c);
-		if (c == '<')
-			temp1++;
-		if (c == '>')
-			temp2++;
-		if(input.eof())
-			break;
+	if (Form3->CheckBox2->Checked) {
+		int temp1 = 1, temp2 = 0;
+		char c;
+		fragment.push_back('<');
+		while (temp1 != temp2) {
+			input.get(c);
+			if (c == '\n')
+				continue;
+			fragment.push_back(c);
+			if (c == '<')
+				temp1++;
+			if (c == '>')
+				temp2++;
+			if (input.eof())
+				break;
+		}
+	}
+	else{
+		std::string start;
+		std::string end;
+		char c;
+		fragment.push_back('<');
+		while(c!=' ' || c=='\n' || c=='\t'){					// «аписуЇмо початок тега
+			input.get(c);
+			fragment.push_back(c);
+			start.push_back(c);
+			if(input.eof())
+				break;				// якщо проб≥л так ≥ не знайшли - виходимо
+		}
+		bool startend = 0;
+		bool prevend = 0;
+		while(start!=(end+' ')){
+			input.get(c);
+			fragment.push_back(c);
+			if (c=='<') {
+				prevend=1;
+			}
+			if((c=='/') && prevend){
+				startend=1;
+				continue;
+			}
+			if(c=='>'){								   // якщо закриваючий тег не сп≥впадаЇ з в≥дкриваючим - шукаЇмо новий
+				startend=0;
+				end.clear();
+			}
+			if(startend){  								// «аписуЇмо закриваючий тег
+				end.push_back(c);
+			}
+			if(input.eof()){
+				break;
+			}
+		}
+		fragment.push_back('>');
 	}
 	return fragment;
 }
@@ -200,10 +241,15 @@ bool match_my(std::vector<std::string>links, ifstream &filters)
 			std::string filter;
 			filters >> filter;
 			TMask *Mask = new TMask(filter.c_str());
-			if(Mask->Matches(links[i].c_str()))
-			return true;
+			if (Mask->Matches(links[i].c_str()))
+				return true;
 			delete Mask;
 		}
 	}
 	return false;
 }
+
+void __fastcall TForm1::Button4Click(TObject *Sender) {
+	Form3->Show();
+}
+// ---------------------------------------------------------------------------
