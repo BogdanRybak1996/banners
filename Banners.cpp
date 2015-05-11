@@ -18,12 +18,11 @@ void copy_banners(ifstream &, ifstream &, ofstream &);
 void put_banners(ifstream &, ifstream &, ofstream &, ofstream &);
 std::string startsave(ifstream &);
 bool match_my(std::vector<std::string>, ifstream &);
+bool match_my(std::string, ifstream &);
 
 struct links { // Використовується в функції "put_banners"
 
 	int pos;
-	int long_link;
-
 	std::string link;
 };
 
@@ -184,6 +183,8 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 			output << std::endl;
 		}
 	}
+	input.clear(); 					// Повертаємося на початок файлу input щоб його можна було використати при вирізанні
+	input.seekg(0);
 }
 
 std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
@@ -222,8 +223,6 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 		bool prevend = 0;
 		while (start != (end + ' ')) {
 			input.get(c);
-			if (c == '\n')
-				continue;
 			fragment.push_back(c);
 			if (c == '<') {
 				prevend = 1;
@@ -268,6 +267,23 @@ bool match_my(std::vector<std::string>links, ifstream &filters)
 	// Повертаємося на початок файлу для його використання в подальшому
 	return t;
 }
+bool match_my(std::string link, ifstream &filters)
+  // Перевантажена функція, яка робить те ж, але із string
+{
+	bool t = 0;
+		while (!filters.eof()) {
+			std::string filter;
+			filters >> filter;
+			TMask *Mask = new TMask(filter.c_str());
+			if (Mask->Matches(link.c_str()))
+				t = 1;
+			delete Mask;
+	}
+	filters.clear();
+	filters.seekg(0);
+
+	return t;
+}
 
 void __fastcall TForm1::Button4Click(TObject *Sender) {
 	Form3->Show();
@@ -276,32 +292,40 @@ void __fastcall TForm1::Button4Click(TObject *Sender) {
 // ---------------------------------------------------------------------------
 void put_banners(ifstream &input, ifstream &filters, ofstream &output,
   ofstream &inputOut) {
-	std::vector<links>links_in_str; 		   // Тут будемо зберігати наші посилання
+	std::vector<links>links_in_str; // Тут будемо зберігати наші посилання
 	links temp;
-	copy_banners(input, filters, output); 	// Копіюємо банери в новий файлик
+	copy_banners(input, filters, output); // Копіюємо банери в новий файлик
 	std::string inputstr;
-	while (!input.eof()) { 				// Вигружаємо вмість всього файлу в string
+	while (!input.eof()) { // Вигружаємо вмість всього файлу в string
 		inputstr.push_back(input.get());
 	}
 	bool save = 0;
 	int patty = 0;
-	temp.long_link = 0;
-	for (int i = 0; i < inputstr.length(); i++) { 		// Записуємо всі посилання
-		if (inputsrt[i] == '"' && patty % 2 == 0) {
+	for (int i = 0; i < inputstr.length(); i++) { // Записуємо всі посилання
+		if (inputstr[i] == '"' && patty % 2 == 0) {
 			patty++;
 			temp.pos = i;
 			continue;
 		}
-		if (patty % 2 != 0 && inputsrt[i] != '"') {
+		if (patty % 2 != 0 && inputstr[i] != '"') {
 			temp.link.push_back(inputstr[i]);
-			temp.long_link++;
 		}
-		if (patty % 2 != 0 && inputsrt[i] == '"') {
+		if (patty % 2 != 0 && inputstr[i] == '"') {
+			patty++;
 			links_in_str.push_back(temp);
 			temp.link.clear();
-			temp.long_link = 0;
 		}
 	}
-
+	for(int i=0;i<links_in_str.size();i++){					// Якщо знаходимо співпадіння з фільтром - видаляємо
+			if(match_my(links_in_str[i].link,filters)){
+				for(int j=0;j<(links_in_str[i].link.size());j++)
+					inputstr.erase(inputstr.begin()+((links_in_str[i].pos)+1));
+			}
+		}
+		input.clear();
+		input.seekg(0);
+	for(int i=0;i<inputstr.size();i++)
+		inputOut << inputstr[i];
+	Form1->StatusListBox->Items->Add("Банери вирізані з початкової сторінки");
 }
 

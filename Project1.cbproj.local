@@ -8,12 +8,12 @@
     <Transaction>1899.12.30 00:00:00.000.386,C:\Documents\Embarcadero\Studio\Projects\Unit2.dfm=D:\Документи\Курсова\Project\Unit2.dfm</Transaction>
     <Transaction>1899.12.30 00:00:00.000.066,C:\Documents\Embarcadero\Studio\Projects\Unit1.h=D:\Документи\Курсова\Project\Banners.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.066,C:\Documents\Embarcadero\Studio\Projects\Unit1.dfm=D:\Документи\Курсова\Project\Banners.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.679,=C:\Documents\Embarcadero\Studio\Projects\Unit2.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.373,=C:\Documents\Embarcadero\Studio\Projects\Unit2.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.679,=C:\Documents\Embarcadero\Studio\Projects\Unit2.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.386,C:\Documents\Embarcadero\Studio\Projects\Unit2.cpp=D:\Документи\Курсова\Project\Unit2.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.485,=C:\Documents\Embarcadero\Studio\Projects\Unit2.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.753,C:\Documents\Embarcadero\Studio\Projects\Project1.cbproj=D:\Документи\Курсова\Project\Project1.cbproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.817,=C:\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.619,C:\Documents\Embarcadero\Studio\Projects\Project1PCH1.h=D:\Документи\Курсова\Project\BannersPCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.817,=C:\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
   </Transactions>
 </BorlandProject>
