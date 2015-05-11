@@ -16,7 +16,7 @@
 void copy_banners(ifstream &, ifstream &, ofstream &);
 // void put_banners(fstream &,fstream &,fstream &);
 std::string startsave(ifstream &);
-bool match(std::vector<std::string>, ifstream &);
+bool match_my(std::vector<std::string>, ifstream &);
 TForm1 *Form1;
 
 // ---------------------------------------------------------------------------
@@ -33,8 +33,8 @@ void __fastcall TForm1::SellectButton1Click(TObject *Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TForm1::SelectButton2Click(TObject *Sender) {
-	if (OpenDialog1->Execute()) {
-		Edit2->Text = OpenDialog1->FileName;
+	if (OpenDialog2->Execute()) {
+		Edit2->Text = OpenDialog2->FileName;
 	}
 }
 // ---------------------------------------------------------------------------
@@ -133,6 +133,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 	inputOut.close();
 	output.close();
 	filters.close();
+	StatusListBox->Items->Add("Роботу завершено");
 }
 
 // ---------------------------------------------------------------------------
@@ -149,7 +150,7 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 		int patty = 0; // Змінна, в якій запам'ятовується кількість лапок
 		std::string link;
 		std::vector<std::string>links; // Всі посилання із фрагменту
-		for (int j = 0; j < elements[i].size(); j++) {
+		for (int j = 0; j < elements[i].length(); j++) {
 			if (elements[i][j] == '"') {
 				patty++;
 				continue;
@@ -164,8 +165,9 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 				link.clear();
 			}
 		}
-		if (match(links, filters)) {
+		if (match_my(links, filters)) {
 			output << elements[i];
+			output << endl;
 		}
 	}
 }
@@ -184,11 +186,13 @@ std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
 			temp1++;
 		if (c == '>')
 			temp2++;
+		if(input.eof())
+			break;
 	}
 	return fragment;
 }
 
-bool match(std::vector<std::string>links, ifstream &filters)
+bool match_my(std::vector<std::string>links, ifstream &filters)
   // Функція, яка перевіряє чи співпадає хоча б одне посилання з маскою
 {
 	for (int i = 0; i < links.size(); i++) {
