@@ -14,9 +14,9 @@
 #include <fstream>
 #include <Masks.hpp>
 
-void copy_banners(ifstream &, ifstream &, ofstream &);
-void put_banners(ifstream &, ifstream &, ofstream &, ofstream &);
-std::string startsave(ifstream &);
+void copy_banners(fstream &, ifstream &, ofstream &);
+void put_banners(std::string,fstream &, ifstream &, ofstream &);
+std::string startsave(fstream &);
 bool match_my(std::vector<std::string>, ifstream &);
 bool match_my(std::string, ifstream &);
 
@@ -84,7 +84,7 @@ void __fastcall TForm1::FormShow(TObject *Sender) // Шляши до файлів по default
 // ---------------------------------------------------------------------------
 
 void __fastcall TForm1::Button1Click(TObject *Sender) {
-	std::ifstream input;
+	std::fstream input;
 	std::ofstream inputOut;
 	std::ifstream filters;
 	std::ofstream output;
@@ -92,10 +92,8 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 	bool health = 1;
 	AnsiString inputfilename = OpenDialog1->FileName;
 
-	input.open(inputfilename.c_str(), ios::nocreate);
+	input.open(inputfilename.c_str(), ios::nocreate | ios::in);
 	// Відкриваємо вхідний файл
-	inputOut.open(inputfilename.c_str(), ios::nocreate);
-
 	if (!input.is_open()) {
 		StatusListBox->Items->Add("Файл " + inputfilename +
 		  " відкрити не вдалося");
@@ -137,7 +135,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 			copy_banners(input, filters, output);
 		}
 		else {
-			put_banners(input, filters, output, inputOut);
+			put_banners(inputfilename.c_str(),input, filters, output);
 		}
 	}
 	input.close();
@@ -148,7 +146,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender) {
 }
 
 // ---------------------------------------------------------------------------
-void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
+void copy_banners(fstream &input, ifstream &filters, ofstream &output)
 { // Функція, яка копіює банери (без вирізання)
 	std::vector<std::string>elements;
 	char c = '\0';
@@ -187,7 +185,7 @@ void copy_banners(ifstream &input, ifstream &filters, ofstream &output)
 	input.seekg(0);
 }
 
-std::string startsave(ifstream &input) { // Функція, яка запам'ятовує "<*>"
+std::string startsave(fstream &input) { // Функція, яка запам'ятовує "<*>"
 	std::string fragment;
 	if (Form3->CheckBox2->Checked) {
 		int temp1 = 1, temp2 = 0;
@@ -290,8 +288,7 @@ void __fastcall TForm1::Button4Click(TObject *Sender) {
 }
 
 // ---------------------------------------------------------------------------
-void put_banners(ifstream &input, ifstream &filters, ofstream &output,
-  ofstream &inputOut) {
+void put_banners(std::string inputfilename,fstream &input, ifstream &filters, ofstream &output) {
 	std::vector<links>links_in_str; // Тут будемо зберігати наші посилання
 	links temp;
 	copy_banners(input, filters, output); // Копіюємо банери в новий файлик
@@ -322,10 +319,10 @@ void put_banners(ifstream &input, ifstream &filters, ofstream &output,
 					inputstr.erase(inputstr.begin()+((links_in_str[i].pos)+1));
 			}
 		}
-		input.clear();
-		input.seekg(0);
+		input.close();
+		input.open(inputfilename.c_str(),ios::out);
 	for(int i=0;i<inputstr.size();i++)
-		inputOut << inputstr[i];
+		input << inputstr[i];
 	Form1->StatusListBox->Items->Add("Банери вирізані з початкової сторінки");
 }
 
