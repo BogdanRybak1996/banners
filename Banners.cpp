@@ -222,6 +222,9 @@ std::string startsave(fstream &input) { // Функція, яка запам'ятовує "<*>"
 		while (start != (end + ' ')) {
 			input.get(c);
 			fragment.push_back(c);
+			if((c!= '/') && prevend){
+				prevend=0;
+			}
 			if (c == '<') {
 				prevend = 1;
 			}
@@ -296,6 +299,7 @@ void put_banners(std::string inputfilename,fstream &input, ifstream &filters, of
 	while (!input.eof()) { // Вигружаємо вмість всього файлу в string
 		inputstr.push_back(input.get());
 	}
+	inputstr.erase(inputstr.begin()+(inputstr.length()-1));			// Видаляємо ознаку закінчення файлу
 	bool save = 0;
 	int patty = 0;
 	for (int i = 0; i < inputstr.length(); i++) { // Записуємо всі посилання
@@ -313,13 +317,19 @@ void put_banners(std::string inputfilename,fstream &input, ifstream &filters, of
 			temp.link.clear();
 		}
 	}
+	int resize=0;                                            // Змінна, для того, щоб запам'ятати кількість видалених раніше символів
+	int resizefixed=0;
 	for(int i=0;i<links_in_str.size();i++){					// Якщо знаходимо співпадіння з фільтром - видаляємо
 			if(match_my(links_in_str[i].link,filters)){
-				for(int j=0;j<(links_in_str[i].link.size());j++)
-					inputstr.erase(inputstr.begin()+((links_in_str[i].pos)+1));
+				for(int j=0;j<(links_in_str[i].link.size());j++){
+					inputstr.erase(inputstr.begin()+((links_in_str[i].pos)+1-resizefixed));
+					resize++;
+					}
+						resizefixed=resize;
 			}
 		}
 		input.close();
+		input.clear();
 		input.open(inputfilename.c_str(),ios::out);
 	for(int i=0;i<inputstr.size();i++)
 		input << inputstr[i];
