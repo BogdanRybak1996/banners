@@ -68,7 +68,6 @@ void __fastcall TForm1::Button3Click(TObject *Sender) {
 
 void __fastcall TForm1::FormShow(TObject *Sender) // Ўл€ши до файл≥в по default
 {
-	char buff;
 	OpenDialog1->FileName = ExtractFilePath(Application->ExeName) +
 	  "input.html";
 	Edit1->Text = OpenDialog1->FileName;
@@ -213,6 +212,11 @@ std::string startsave(fstream &input) { // ‘ункц≥€, €ка запам'€товуЇ "<*>"
 			input.get(c);
 			fragment.push_back(c);
 			start.push_back(c);
+			if(start=="html" || start=="body"){
+				fragment.clear();
+				start.clear();
+				return fragment;
+			}
 			if (input.eof())
 				break; // якщо проб≥л так ≥ не знайшли - виходимо
 		}
