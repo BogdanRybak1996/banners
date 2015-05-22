@@ -212,7 +212,7 @@ std::string startsave(fstream &input) { // Функція, яка запам'ятовує "<*>"
 			input.get(c);
 			fragment.push_back(c);
 			start.push_back(c);
-			if(start=="html" || start=="body"){
+			if(c=='>'){
 				fragment.clear();
 				start.clear();
 				return fragment;
